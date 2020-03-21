@@ -240,3 +240,4 @@ private:
 		return table[elements[x].first][elements[x].second].first;
 	}
 };
+ 
