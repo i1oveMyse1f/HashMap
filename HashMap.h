@@ -10,8 +10,8 @@ template<class KeyType, class ValueType, class Hash = std::hash<KeyType>>
 class HashMap {
 public:
 	static constexpr const size_t MIN_CAPACITY = 2;
-	typedef std::pair<KeyType, ValueType> pKeyValue;
-	typedef std::pair<const KeyType, ValueType> pConstKeyValue;
+	typedef std::pair<KeyType, ValueType> PKeyValue;
+	typedef std::pair<const KeyType, ValueType> PConstKeyValue;
 
 	class const_iterator;
 	class iterator {
@@ -44,11 +44,11 @@ public:
 		bool operator!=(const iterator other) const {
 			return pos != other.pos;
 		}
-		pConstKeyValue& operator*() {
-			return reinterpret_cast<pConstKeyValue&>(hmp->get_pair(pos));
+		PConstKeyValue& operator*() {
+			return reinterpret_cast<PConstKeyValue&>(hmp->get_pair(pos));
 		}
-		pConstKeyValue* operator->() {
-			return reinterpret_cast<pConstKeyValue*>(&hmp->get_pair(pos));
+		PConstKeyValue* operator->() {
+			return reinterpret_cast<PConstKeyValue*>(&hmp->get_pair(pos));
 		}
 	};
 	class const_iterator {
@@ -81,11 +81,11 @@ public:
 		bool operator!=(const_iterator other) const {
 			return hmp != other.hmp;
 		}
-		const pConstKeyValue& operator*() const {
-			return reinterpret_cast<const pConstKeyValue&>(hmp->get_pair(pos));
+		const PConstKeyValue& operator*() const {
+			return reinterpret_cast<const PConstKeyValue&>(hmp->get_pair(pos));
 		}
-		const pConstKeyValue* operator->() const {
-			return reinterpret_cast<const pConstKeyValue*>(&hmp->get_pair(pos));
+		const PConstKeyValue* operator->() const {
+			return reinterpret_cast<const PConstKeyValue*>(&hmp->get_pair(pos));
 		}
 	};
 
@@ -95,7 +95,7 @@ public:
 		while (beg != end)
 			insert(*beg++);
 	}
-	inline HashMap(const std::initializer_list<pKeyValue>& list, Hash hasher = Hash()) :
+	inline HashMap(const std::initializer_list<PKeyValue>& list, Hash hasher = Hash()) :
 		HashMap(list.begin(), list.end(), hasher) {}
 
 	inline size_t size() const {
@@ -107,7 +107,7 @@ public:
 	inline Hash hash_function() const {
 		return hasher;
 	}
-	inline void insert(const pKeyValue& element) {
+	inline void insert(const PKeyValue& element) {
 		if (!contains(element.first))
 			add(element);
 	}
@@ -159,7 +159,7 @@ public:
 		}
 	}
 private:
-	std::vector<std::vector<std::pair<pKeyValue, size_t>>> table;
+	std::vector<std::vector<std::pair<PKeyValue, size_t>>> table;
 	std::vector<std::pair<size_t, size_t>> elements;
 	Hash hasher;
 	size_t _size;
@@ -169,7 +169,7 @@ private:
 		return hasher(key) & (_capacity - 1);
 	}
 
-	std::pair<pKeyValue, size_t>& find_elem(const KeyType& key) {
+	std::pair<PKeyValue, size_t>& find_elem(const KeyType& key) {
 		size_t pos = get_pos(key);
 		size_t i = 0;
 		while (!(table[pos][i].first.first == key))
@@ -177,7 +177,7 @@ private:
 		return table[pos][i];
 	}
 
-	std::pair<pKeyValue, size_t> find_elem(const KeyType& key) const {
+	std::pair<PKeyValue, size_t> find_elem(const KeyType& key) const {
 		size_t pos = get_pos(key);
 		size_t i = 0;
 		while (!(table[pos][i].first.first == key))
@@ -185,7 +185,7 @@ private:
 		return table[pos][i];
 	}
 
-	void add(const pKeyValue& el) {
+	void add(const PKeyValue& el) {
 		size_t pos = get_pos(el.first);
 		table[pos].push_back({ el, elements.size() });
 		elements.push_back({ pos, table[pos].size() - 1 });
@@ -220,7 +220,7 @@ private:
 	void rehash() {
 		if ((_size << 1) < _capacity)
 			return;
-		std::vector<pKeyValue> elements_container(_size);
+		std::vector<PKeyValue> elements_container(_size);
 		for (const auto& i : elements)
 			elements_container[--_size] = table[i.first][i.second].first;
 		for (const auto& i : elements)
@@ -233,11 +233,10 @@ private:
 			add(i);
 	}
 
-	const pKeyValue& get_pair(size_t x) const {
+	const PKeyValue& get_pair(size_t x) const {
 		return table[elements[x].first][elements[x].second].first;
 	}
-	pKeyValue& get_pair(size_t x) {
+	PKeyValue& get_pair(size_t x) {
 		return table[elements[x].first][elements[x].second].first;
 	}
 };
- 
